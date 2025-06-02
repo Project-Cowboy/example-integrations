@@ -27,15 +27,22 @@ fn main() {
     let tlsn_representation_bytes: Vec<u8> = env::read();
     // Program id for core tlsn verifier 
     let tlsn_prover_id = [1103052681, 2953117475, 3732232465, 3183722244, 307322261, 1784411821, 2489196935, 3129733399];
+    
     // Verify previous proof of our tls notary proof validity
     env::verify(tlsn_prover_id, &serde::to_vec(&journal).unwrap()).unwrap();
 
+    env::log("Guest: Core proof verified");
+
     let json_bytes = extract_follower_num_object(&tlsn_representation_bytes).unwrap();
+    env::log("Guest: Extracted json of tiktok account owner's followers");
     let json_str = core::str::from_utf8(json_bytes).unwrap();
+    env::log("Guest: Interpreted json string");
     let wrapped = format!("{{{}}}", json_str);
     let parsed = json::parse(&wrapped).unwrap();
     let follower_val = parsed["follower_num"]["value"].as_u32().unwrap();
-
+    env::log(
+        &format!("Guest: got follower count {:?} from data", follower_val)
+    );
 
     // Identify the type of account based on amount of followers
     let influencer_type = match follower_val {

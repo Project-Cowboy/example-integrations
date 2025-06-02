@@ -84,5 +84,5 @@ fn main() {
 
     let proof_output: u8 = receipt.journal.decode().expect("Journal should contain value");
 
-    println!("All verified. Committed output is: {:?} ", proof_output);
+    println!("All verified. Committed(public) output is: {:?} ", proof_output);
 }
