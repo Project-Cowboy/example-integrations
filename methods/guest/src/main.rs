@@ -18,6 +18,8 @@ enum InfluencerType {
     Mega,
 }
 
+// https://www.tiktok.com/aweme/v2/data/insight/?locale=en&aid=1988&priority_region=US&region=US&tz_name=America%2FNew_York&app_name=tiktok_creator_center&app_language=en&device_platform=web_pc&channel=tiktok_web&device_id=7397803382726641198&os=mac&screen_width=1440&screen_height=900&browser_language=en-US&browser_platform=MacIntel&browser_name=Mozilla&browser_version=5.0+(Macintosh%3B+Intel+Mac+OS+X+10_15_7)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F137.0.0.0+Safari%2F537.36&tz_offset=-14400&type_requests=[%7B%22insigh_type%22:%22follower_num_history%22,%22days%22:16,%22end_days%22:1%7D,%7B%22insigh_type%22:%22follower_num%22,%22days%22:16,%22end_days%22:1%7D,%7B%22insigh_type%22:%22net_follower_history%22,%22days%22:16,%22end_days%22:1%7D]
+
 // The following code's execution trace will be proven with a zk stark
 fn main() {
     // Receive journal, for verifying the core proof of the tls notary signatures
@@ -26,7 +28,7 @@ fn main() {
     // TODO: Hash this with accelerated sha2 and compare to hash above(journal value)
     let tlsn_representation_bytes: Vec<u8> = env::read();
     // Program id for core tlsn verifier 
-    let tlsn_prover_id = [1103052681, 2953117475, 3732232465, 3183722244, 307322261, 1784411821, 2489196935, 3129733399];
+    let tlsn_prover_id = [1363182423, 1400773265, 918797330, 1419448088, 1135916865, 604038609, 1578339176, 834135541] ;
     
     // Verify previous proof of our tls notary proof validity
     env::verify(tlsn_prover_id, &serde::to_vec(&journal).unwrap()).unwrap();
