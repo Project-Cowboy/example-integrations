@@ -1,5 +1,14 @@
 # Cowboy Example Programs
 
+### Quick Start
+1. Run
+```shell
+docker run -p 1881:1881 --platform linux/amd64   ghcr.io/project-cowboy/cowboy-prover:latest
+```
+2. Separate terminal:
+```shell
+cargo run run
+```
 
 ### How to generate TLSN proof of tiktok data from frontend
 
@@ -17,7 +26,6 @@ For many web servers, a flexible websockets to TCP proxy will need to be run, un
 5. Search in the filter bar for "follower_num"
 6. There should be two results. Find the one which features the `follower_num` object at the top-level of the `response` field.
 7. Click "Notarize". Then, the next "Notarize" button as well.
-8. 
 
 
 4. Filter the network request

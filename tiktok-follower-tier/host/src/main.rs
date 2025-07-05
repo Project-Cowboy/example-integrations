@@ -16,7 +16,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Run,
+    Run {
+        #[arg(default_value = "http://localhost:1881")]
+        base_url: String
+    },
     Upload
 }
 
@@ -24,8 +27,8 @@ enum Commands {
 async fn main() {
     let cli = Cli::parse();
     match cli.command {
-        Commands::Run => {
-            run().await;
+        Commands::Run { base_url } => {
+            run(&base_url).await;
         },
         Commands::Upload => {
             upload().await.unwrap();

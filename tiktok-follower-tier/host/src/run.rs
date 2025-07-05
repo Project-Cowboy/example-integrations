@@ -21,7 +21,7 @@ struct TlsnProofPartial {
     pub data: String,
 }
 
-pub async fn run() {
+pub async fn run(base_url: &str) {
     // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
@@ -30,8 +30,10 @@ pub async fn run() {
     let json_str = fs::read_to_string("tlsn_tiktok_viewer_proof.json").expect("Failed to read file");
     let tlsn_proof_parsed: TlsnProofPartial = serde_json::from_str(&json_str).expect("Invalid JSON");
 
+    let url = format!("{}/prove", base_url);
+
     let core_receipt_response = request_program_core_proof(
-        "http://localhost:1881/prove",
+        &url,
         &tlsn_proof_parsed.data,
         None
     ).await.unwrap();
@@ -103,7 +105,7 @@ pub async fn run() {
     let proof_output: u8 = receipt.journal.decode().expect("Journal should contain value");
 
     println!(
-        "All verified. Committed(public) output is account type: {:?} ",
+        "All verified. Committed(public) output is account tier: \"{:?}\" ",
         AccountType::try_from(proof_output).expect("Should not have created an account type identifier that is out of range.")
     );
 }
