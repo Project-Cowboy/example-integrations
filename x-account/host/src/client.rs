@@ -9,7 +9,7 @@ use methods::{
 
 use crate::api::api as cowboy_api;
 
-// Mathod to upload the example program, with its particular uri, to the chain, using the well-known Alice account
+// Mathod to upload the example program, with its particular uri, to the chain, using the well-known bob account
 pub async fn upload() -> Result<(), Box<dyn std::error::Error>> {
     let api = OnlineClient::<PolkadotConfig>::new().await?;
     let program_id: [u32; 8] = COWBOY_EXAMPLE_APPS_ID;
@@ -21,8 +21,8 @@ pub async fn upload() -> Result<(), Box<dyn std::error::Error>> {
 
     let add_program_call = cowboy_api::tx().cowboy().add_program(program_id, program, selector_app_host, selector_app_uri);
 
-    // Well-known alice account is used for early stage development
-    let from = dev::alice();
+    // Well-known bob account is used for early stage development
+    let from = dev::bob();
     let events = api
         .tx()
         .sign_and_submit_then_watch_default(&add_program_call, &from)

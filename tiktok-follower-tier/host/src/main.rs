@@ -17,21 +17,26 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Run {
-        #[arg(default_value = "http://localhost:1881")]
-        base_url: String
+        // #[arg(default_value = "http://localhost:1881")]
+        // prover_url: String,
+        #[arg(long)]
+        node_url: String
     },
-    Upload
+    Upload {
+        #[arg(long)]
+        node_url: String
+    }
 }
 
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
     match cli.command {
-        Commands::Run { base_url } => {
-            run(&base_url).await;
+        Commands::Run { node_url } => {
+            run(&node_url).await;
         },
-        Commands::Upload => {
-            upload().await.unwrap();
+        Commands::Upload { node_url } => {
+            upload(&node_url).await.unwrap();
         }
     }
 }

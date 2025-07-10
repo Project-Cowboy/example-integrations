@@ -10,7 +10,7 @@ fn main() {
     let tlsn_representation_bytes: Vec<u8> = env::read();
 
     // Program id for core tlsn verifier 
-    let tlsn_prover_id = [1997738335, 3678040518, 3768798354, 2157753599, 1334048300, 48065757, 3864380607, 3289501451];
+    let tlsn_prover_id = [91708343, 991163144, 1256456479, 3388616038, 411983993, 592631228, 2627648554, 937790311] ;
 
     // Verify previous proof of our tls notary proof validity
     env::verify(tlsn_prover_id, &serde::to_vec(&journal).unwrap()).unwrap();
@@ -19,17 +19,15 @@ fn main() {
 
     // Get value of `screen_name` key
     let screen_name_bytes = extract_value_from_key(&tlsn_representation_bytes, "screen_name").unwrap();
-
-    env::log(&format!("Guest: debug bytes: {:?} ", screen_name_bytes));
-
     let screen_name = String::from_utf8(screen_name_bytes.clone()).unwrap();
 
     env::log(&format!("Guest: Extracted screen name: {:?} ", screen_name));
 
-    let cool_keywords = ["zk", "0x", "partner", "berg"];
-    let is_cool = cool_keywords.iter().any(|keyword| screen_name.contains(keyword));
+    // TODO: Prove something about the data you receieved from the web:
+    // let cool_keywords = ["zk", "0x", "partner", "berg"];
+    // let is_cool = cool_keywords.iter().any(|keyword| screen_name.contains(keyword));
     // Prove we are cool 😎
-    assert!(is_cool);
+    // assert!(is_cool);
 
     // Bind to a new identity credential mapped directly from the unique x.com username
     let identity = Sha256::digest(&screen_name_bytes);

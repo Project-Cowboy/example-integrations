@@ -14,14 +14,16 @@ use tlsn_core::CryptoProvider;
 use std::fs;
 use serde::Deserialize;
 
-use crate::client::request_program_core_proof;
+use crate::client::{get_core_proof_id, request_program_core_proof};
+
+const BASE_PROVER_URL: &str = "http://localhost:1881";
 
 #[derive(Debug, Deserialize)]
 struct TlsnProofPartial {
     pub data: String,
 }
 
-pub async fn run(base_url: &str) {
+pub async fn run(node_url: &str) {
     // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::filter::EnvFilter::from_default_env())
@@ -30,7 +32,7 @@ pub async fn run(base_url: &str) {
     let json_str = fs::read_to_string("tlsn_tiktok_viewer_proof.json").expect("Failed to read file");
     let tlsn_proof_parsed: TlsnProofPartial = serde_json::from_str(&json_str).expect("Invalid JSON");
 
-    let url = format!("{}/prove", base_url);
+    let url = format!("{}/prove", BASE_PROVER_URL);
 
     let core_receipt_response = request_program_core_proof(
         &url,
@@ -40,6 +42,9 @@ pub async fn run(base_url: &str) {
 
     let core_receipt_bytes = hex::decode(core_receipt_response.receipt).unwrap();
     let core_receipt: Receipt = bincode::deserialize(&core_receipt_bytes).unwrap();
+
+    let core_proof_id = get_core_proof_id(node_url).await.unwrap();
+    println!("Core proof id set onchain curently is {:?} ", core_proof_id);
 
     let journal_value: [u8; 32] = core_receipt.journal.decode().expect(
         "Journal output should deserialize into the same types (& order) that it was written",
@@ -77,13 +82,14 @@ pub async fn run(base_url: &str) {
         .unwrap()
         .write(&tlsn_presentation_bytes)
         .unwrap()
+        .write(&core_proof_id)
+        .unwrap()
         .build()
         .unwrap();
 
     // Obtain the default prover.
     let prover = default_prover();
 
-    println!("With journal value written {:?} ", journal_value);
     println!("Proving program of our guest id: {:?} ", COWBOY_EXAMPLE_APPS_ID);
 
     // Proof information by proving the specified ELF binary.

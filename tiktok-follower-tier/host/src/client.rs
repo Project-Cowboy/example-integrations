@@ -9,9 +9,9 @@ use methods::{
 
 use crate::api::api as cowboy_api;
 
-// Mathod to upload the example program, with its particular uri, to the chain, using the well-known Alice account
-pub async fn upload() -> Result<(), Box<dyn std::error::Error>> {
-    let api = OnlineClient::<PolkadotConfig>::new().await?;
+// Mathod to upload the example program, with its particular uri, to the chain, using the well-known bob account
+pub async fn upload(url: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let api = OnlineClient::<PolkadotConfig>::from_url(url).await?;
     let program_id: [u32; 8] = COWBOY_EXAMPLE_APPS_ID;
     let program = COWBOY_EXAMPLE_APPS_ELF.to_vec();
 
@@ -21,7 +21,7 @@ pub async fn upload() -> Result<(), Box<dyn std::error::Error>> {
 
     let add_program_call = cowboy_api::tx().cowboy().add_program(program_id, program, selector_app_host, selector_app_uri);
 
-    let from = dev::alice();
+    let from = dev::bob();
     let events = api
         .tx()
         .sign_and_submit_then_watch_default(&add_program_call, &from)
@@ -43,7 +43,25 @@ pub struct ReceiptResponse {
     pub receipt: String,
 }
 
-// Connect to the prover and request a proof for the core proof.
+// Get the current core proof id for verifying any application-specific proof on Cowboy
+pub async fn get_core_proof_id(
+    url: &str,
+) -> Result<[u32; 8], Box<dyn std::error::Error>> {
+    let api = OnlineClient::<PolkadotConfig>::from_url(url).await?;
+    let core_proof_key = cowboy_api::storage().cowboy().core_proof_id();
+    let core_proof_id = api
+        .storage()
+        .at_latest()
+        .await
+        .unwrap()
+        .fetch(&core_proof_key)
+        .await
+        .unwrap();
+    
+    Ok(core_proof_id.expect("Core proof should exist onchain"))
+}
+
+// Connect to the prover and request a proof for the application-specific integration
 pub async fn request_program_core_proof(
     url: &str,
     data_hex: &str,

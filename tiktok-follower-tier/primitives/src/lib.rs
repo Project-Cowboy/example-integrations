@@ -3,7 +3,7 @@
 #[repr(u8)]
 pub enum AccountType {
     /// Less than 1,000 followers.
-    None,
+    SmallAccount,
     /// 1,000–10,000 followers.
     Nano,
     /// 10,001–50,000 followers.
@@ -21,7 +21,7 @@ impl TryFrom<u8> for AccountType {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            0 => Ok(AccountType::None),
+            0 => Ok(AccountType::SmallAccount),
             1 => Ok(AccountType::Nano),
             2 => Ok(AccountType::Micro),
             3 => Ok(AccountType::MidTier),
@@ -37,7 +37,7 @@ impl AccountType {
     // Return an influencer type based on the amount of followers the account has
     pub fn from_follower_count(follower_count: u32) -> Self {
         match follower_count {
-            0..=999 => AccountType::None,
+            0..=999 => AccountType::SmallAccount,
             1000..=10_000 => AccountType::Nano,
             10_001..=50_000 => AccountType::Micro,
             50_001..=500_000 => AccountType::MidTier,
