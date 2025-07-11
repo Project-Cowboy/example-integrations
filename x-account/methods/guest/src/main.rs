@@ -10,9 +10,9 @@ fn main() {
     let tlsn_representation_bytes: Vec<u8> = env::read();
 
     // Program id for core tlsn verifier 
-    let tlsn_prover_id = [91708343, 991163144, 1256456479, 3388616038, 411983993, 592631228, 2627648554, 937790311] ;
-
-    // Verify previous proof of our tls notary proof validity
+    let tlsn_prover_id: [u32; 8] = env::read();
+    
+    // Verify previous proof of our tls notary proof validity. This must be done for security.
     env::verify(tlsn_prover_id, &serde::to_vec(&journal).unwrap()).unwrap();
 
     env::log("Guest: Core proof verified");

@@ -11,7 +11,7 @@ pub enum AccountType {
     /// 50,001–500,000 followers.
     MidTier,
     /// 500,001–1,000,000 followers.
-    Macro, 
+    Macro,
     /// 1,000,001+ followers.
     Mega,
 }
@@ -31,7 +31,6 @@ impl TryFrom<u8> for AccountType {
         }
     }
 }
-
 
 impl AccountType {
     // Return an influencer type based on the amount of followers the account has

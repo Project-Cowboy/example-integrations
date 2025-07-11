@@ -1,4 +1,4 @@
-# Cowboy Example Programs
+# Cowboy Example Integrations
 
 ### Quick Start
 1. Run
@@ -10,24 +10,37 @@ docker run -p 1881:1881 --platform linux/amd64   ghcr.io/project-cowboy/cowboy-p
 cargo run run
 ```
 
-### How to generate TLSN proof of tiktok data from frontend
+### Guide to the Examples
+The Cowboy example integrations showcase how integrations can be built on top of the Cowboy network to get authenticated web data, and compute on top of it. Each integration example is made up of a RISC Zero Guest program, and native code for interacting with it, or sending the program to the local prover for generating a zk proof.
 
-## Proxy Setup
-For many web servers, a flexible websockets to TCP proxy will need to be run, until Cowboy runs hosted ones for convenience:
-1. Download wstcp
-2. wstcp --bind-addr 127.0.0.1:55688 www.tiktok.com:443
-3. Tell your browser extension about the proxy. In the options menu of the browser extension, set `http://127.0.0.1:55688` for the proxy api field.
+As a starting point, we recommend first checking out the x-account example, due to the simplicity, and fewer steps involved in proving.
 
-## Get data
-1. Authenticate to Tiktok in browser
-2. Ensure that you have analytics enabled, and that the data is ready(Tiktok will tell you you need to wait if not ready)
-3. Browse to the analytics page(https://www.tiktok.com/tiktokstudio/analytics/overview?from=dropdown_button)
-4. Open the TLS Notary Extension
-5. Search in the filter bar for "follower_num"
-6. There should be two results. Find the one which features the `follower_num` object at the top-level of the `response` field.
-7. Click "Notarize". Then, the next "Notarize" button as well.
+#### Capabilities
+ Examples showcase a number of capabilities for developers building on Cowboy:
+- Composition, or verifying a previous integration's proof within your program
+- Executing statements on authenticated web data in zero knowledge(e.g. I can prove I am over 21, without revealing my age, given some request to a government website)
+- Outputting data from an integration's execution for onchain consumption, or consumption from someone else's proof.
 
+#### Structure
 
-4. Filter the network request
-1.
-follower_num
+Each integration includes:
+
+1. **Guest Program** (e.g., `/methods/guest/src/main.rs`)  
+   This contains the zero-knowledge logic. It:
+   - Verifies the TLS Notary proof (core proof).
+   - Computes on the authenticated data.
+   - Emits public outputs.
+
+   All execution here is proven in zero knowledge using RISC Zero. The compiled ELF binary is stored onchain.
+
+2. **Host Code**  
+   This runs on your local machine and:
+   - Defines CLI behavior
+   - Submits proofs to the prover
+   - Interacts with the Cowboy chain
+
+3. **Primitives**  
+   Shared types and logic used by both guest and host.
+
+4. **Helpers**  
+   Utility functions for interacting with the prover and chain.

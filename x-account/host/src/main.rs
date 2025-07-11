@@ -1,11 +1,13 @@
 mod run;
-mod client;
-pub mod api;
-
+use helpers::client::upload;
+use methods::{COWBOY_EXAMPLE_APPS_ELF, COWBOY_EXAMPLE_APPS_ID};
 use run::run;
-use client::upload;
 
 use clap::{Parser, Subcommand};
+
+// Required values to identify our custom integration
+const INTEGRATION_HOST_NAME: &[u8] = b"api.x.com";
+const INTEGRATION_URL_PATH: &[u8] = b"/1.1/account/settings.json";
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -17,21 +19,32 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Run {
-        #[arg(default_value = "http://localhost:1881")]
-        base_url: String
+        #[arg(long)]
+        node_url: String,
     },
-    Upload
+    Upload {
+        #[arg(long)]
+        node_url: String,
+    },
 }
 
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
     match cli.command {
-        Commands::Run { base_url } => {
-            run(&base_url).await;
-        },
-        Commands::Upload => {
-            upload().await.unwrap();
+        Commands::Run { node_url } => {
+            run(&node_url).await;
+        }
+        Commands::Upload { node_url } => {
+            upload(
+                &node_url,
+                COWBOY_EXAMPLE_APPS_ID,
+                COWBOY_EXAMPLE_APPS_ELF.to_vec(),
+                INTEGRATION_HOST_NAME.to_vec(),
+                INTEGRATION_URL_PATH.to_vec(),
+            )
+            .await
+            .unwrap();
         }
     }
 }

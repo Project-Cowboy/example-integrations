@@ -1,11 +1,13 @@
 mod run;
-mod client;
-pub mod api;
 
+use helpers::client::upload;
+use methods::{COWBOY_EXAMPLE_APPS_ELF, COWBOY_EXAMPLE_APPS_ID};
 use run::run;
-use client::upload;
 
 use clap::{Parser, Subcommand};
+
+const INTEGRATION_HOST_NAME: &[u8] = b"www.tiktok.com";
+const INTEGRATION_URL_PATH: &[u8] = b"/aweme/v2/data/insight/";
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -17,15 +19,13 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Run {
-        // #[arg(default_value = "http://localhost:1881")]
-        // prover_url: String,
         #[arg(long)]
-        node_url: String
+        node_url: String,
     },
     Upload {
         #[arg(long)]
-        node_url: String
-    }
+        node_url: String,
+    },
 }
 
 #[tokio::main]
@@ -34,9 +34,17 @@ async fn main() {
     match cli.command {
         Commands::Run { node_url } => {
             run(&node_url).await;
-        },
+        }
         Commands::Upload { node_url } => {
-            upload(&node_url).await.unwrap();
+            upload(
+                &node_url,
+                COWBOY_EXAMPLE_APPS_ID,
+                COWBOY_EXAMPLE_APPS_ELF.to_vec(),
+                INTEGRATION_HOST_NAME.to_vec(),
+                INTEGRATION_URL_PATH.to_vec(),
+            )
+            .await
+            .unwrap();
         }
     }
 }
