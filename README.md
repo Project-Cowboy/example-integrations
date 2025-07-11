@@ -27,6 +27,7 @@ Each integration includes:
 
 1. **Guest Program** (e.g., `/methods/guest/src/main.rs`)  
    This contains the zero-knowledge logic. It:
+   - **Is the core logic of any integration.**
    - Verifies the TLS Notary proof (core proof).
    - Computes on the authenticated data.
    - Emits public outputs.
